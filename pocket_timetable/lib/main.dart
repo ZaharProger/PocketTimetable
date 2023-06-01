@@ -25,11 +25,38 @@ class PocketTimetableApp extends StatelessWidget {
           onPrimaryContainer: const Color.fromARGB(255, 54, 189, 67),
           onError: Colors.red,
           tertiary: const Color.fromARGB(255, 121, 165, 174),
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color.fromARGB(255, 255, 255, 255),
+          selectionColor: Color.fromARGB(255, 0, 134, 163),
+          selectionHandleColor: Color.fromARGB(255, 255, 255, 255),
+        ),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+          ),
+          bodyLarge: TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 16,
+              letterSpacing: 1,
+              overflow: TextOverflow.ellipsis
+          ),
+          bodyMedium: TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 14
+          ),
+          bodySmall: TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 12
+          ),
+          labelMedium: TextStyle(
+            color: Color.fromARGB(100, 255, 255, 255),
+            fontSize: 14
+          )
         )
       ),
-      routes: {
-        Routes.setGroup: (context) => const SetGroupPage(userdata: null)
-      },
       onGenerateRoute: (settings) {
         Widget page;
 

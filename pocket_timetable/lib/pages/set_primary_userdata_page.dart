@@ -35,18 +35,20 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
     _usernameController = TextEditingController();
 
     _getUniversities().then((universities) {
-      setState(() {
-        _universities = universities;
-        _selectedUniversity = universities.isEmpty?
+      if (mounted) {
+        setState(() {
+          _universities = universities;
+          _selectedUniversity = universities.isEmpty?
           null : _universities.first;
-      });
+        });
+      }
     });
   }
 
   Future<List<University>> _getUniversities() async {
     List<University> universitiesFromResponse = [];
 
-    Uri url = Uri.https(Api.host, '${Api.apiRoot}${Api.getUniversities}');
+    Uri url = Uri.https(Api.host, '${Api.apiRoot}${Api.universities}');
     http.Response response = await http.get(url, headers: {
       Api.ngrokSkipWarningHeader: '10'
     });
@@ -108,10 +110,7 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
               Text(
                 Labels.loadingLabel,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 14
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               )
             ],
           ) :
@@ -134,10 +133,7 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                       ValidationCases.notEmptyField
                   ),
                   controller: _usernameController,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 14
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
@@ -180,15 +176,12 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                           )
                       ),
                       labelText: Labels.userNameLabel,
-                      labelStyle: const TextStyle(
-                          color: Color.fromARGB(150, 255, 255, 255),
-                          fontSize: 14.0
-                      ),
+                      labelStyle: Theme.of(context).textTheme.labelMedium,
                       floatingLabelAlignment: FloatingLabelAlignment.start,
                       filled: true,
                       fillColor: Colors.transparent,
                       contentPadding: const EdgeInsets.all(5.0)
-                  ),
+                  )
                 ),
                 const SizedBox(height: 25),
                 DropdownButtonFormField(
@@ -242,7 +235,13 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                               width: 2.0,
                               style: BorderStyle.solid
                           )
-                      )
+                      ),
+                      labelText: Labels.userUniversityLabel,
+                      labelStyle: Theme.of(context).textTheme.labelMedium,
+                      floatingLabelAlignment: FloatingLabelAlignment.start,
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.all(5.0)
                   ),
                   value: _selectedUniversity?.id,
                   items: _universities.map((university) {
@@ -254,11 +253,7 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                         university.shortName :
                         '${university.name} (${university.shortName})',
                         textAlign: TextAlign.start,
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 14.0,
-                            overflow: TextOverflow.visible
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     );
                   }).toList(),
@@ -298,12 +293,7 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                           child: Text(
                             Labels.continueButtonLabel,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                                fontSize: 16.0,
-                                letterSpacing: 1,
-                                overflow: TextOverflow.ellipsis
-                            ),
+                            style: Theme.of(context).textTheme.bodyLarge,
                           )
                       ),
                     )

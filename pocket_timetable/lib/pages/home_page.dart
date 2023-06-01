@@ -50,19 +50,16 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           _appBarTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
-            fontSize: 20.0
-          ),
+          style: Theme.of(context).textTheme.displayLarge,
         )
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
-        child: SingleChildScrollView(
-          child: _isConfigured?
-            const TodayTimetablePage() :
-            const SetPrimaryUserdataPage(),
-        ),
+        child: _isConfigured?
+          const TodayTimetablePage() :
+          const SingleChildScrollView(
+            child: SetPrimaryUserdataPage(),
+          ),
       )
     );
   }

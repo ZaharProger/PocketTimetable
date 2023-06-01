@@ -6,6 +6,10 @@ void redirect(BuildContext context, String route, [Object? args]) {
   Navigator.of(context).pushNamed(route, arguments: args);
 }
 
+void clearHistory(BuildContext context) {
+  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+}
+
 void goBack(BuildContext context) {
   Navigator.of(context).pop();
 }
