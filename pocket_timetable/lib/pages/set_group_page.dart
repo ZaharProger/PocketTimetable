@@ -130,57 +130,45 @@ class _SetGroupPageState extends State<SetGroupPage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 10,
-                top: 15,
-                right: 10
-              ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (searchString) {
-                if (searchString.length >= 2) {
-                  _searchGroups(searchString);
-                }
-                else {
-                  setState(() {
-                    _searchResults = [];
-                  });
-                }
-              },
-              autofocus: false,
-              decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                          Radius.circular(10.0)
-                      ),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          width: 2.0,
-                          style: BorderStyle.solid
-                      )
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                          Radius.circular(10.0)
-                      ),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          width: 2.0,
-                          style: BorderStyle.solid
-                      )
-                  ),
-                  hintText: Labels.userGroupLabel,
-                  hintStyle: Theme.of(context).textTheme.labelMedium,
-                  prefixIcon: const Icon(Icons.search),
-                  prefixIconColor: Theme.of(context).colorScheme.secondary,
-                  floatingLabelAlignment: FloatingLabelAlignment.start,
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.all(5.0)
-              ),
-              style: Theme.of(context).textTheme.bodyMedium,
+          TextField(
+            controller: _searchController,
+            onChanged: (searchString) {
+              if (searchString.length >= 2) {
+                _searchGroups(searchString);
+              }
+              else {
+                setState(() {
+                  _searchResults = [];
+                });
+              }
+            },
+            autofocus: false,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        width: 2.0,
+                        style: BorderStyle.solid
+                    )
+                ),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        width: 2.0,
+                        style: BorderStyle.solid
+                    )
+                ),
+                hintText: Labels.userGroupLabel,
+                hintStyle: Theme.of(context).textTheme.labelMedium,
+                prefixIcon: const Icon(Icons.search),
+                prefixIconColor: Theme.of(context).colorScheme.secondary,
+                floatingLabelAlignment: FloatingLabelAlignment.start,
+                filled: true,
+                fillColor: Colors.transparent,
+                contentPadding: const EdgeInsets.all(5.0)
             ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           Expanded(
             child: ListView.separated(

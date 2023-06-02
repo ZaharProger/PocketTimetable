@@ -134,6 +134,7 @@ class _SetPrimaryUserdataPageState extends State<SetPrimaryUserdataPage> {
                   ),
                   controller: _usernameController,
                   style: Theme.of(context).textTheme.bodyMedium,
+                  textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
