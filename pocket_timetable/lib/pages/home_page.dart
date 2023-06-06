@@ -4,7 +4,7 @@ import 'package:pocket_timetable/pages/today_timetable_page.dart';
 import 'package:pocket_timetable/pages/set_primary_userdata_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/page_titles.dart';
+import '../constants/labels.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,8 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isConfigured = false;
-  String _appBarTitle = '';
+  bool? _isConfigured;
 
   @override
   void initState() {
@@ -26,7 +25,6 @@ class _HomePageState extends State<HomePage> {
     _isUserDataConfigured().then((cfgState) {
       setState(() {
         _isConfigured = cfgState;
-        _appBarTitle = cfgState? '' : PageTitles.userdataSetupTitle;
       });
     });
   }
@@ -41,26 +39,36 @@ class _HomePageState extends State<HomePage> {
     return hasUniversity && hasGroup && hasName;
   }
 
+  Widget _getProgressBar() {
+    return Container(
+      color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+          padding: const EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 5
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                Labels.loadingLabel,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              )
+            ],
+          )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        centerTitle: true,
-        title: Text(
-          _appBarTitle,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displayLarge,
-        )
-      ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: Center(
-        child: _isConfigured?
-          const TodayTimetablePage() :
-          const SingleChildScrollView(
-            child: SetPrimaryUserdataPage(),
-          ),
-      )
-    );
+    return _isConfigured == null ?
+      _getProgressBar() : _isConfigured! ?
+      const TodayTimetablePage() : const SetPrimaryUserdataPage();
   }
 }

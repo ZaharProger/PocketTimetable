@@ -1,7 +1,7 @@
 import 'package:pocket_timetable/constants/api.dart';
-import 'package:pocket_timetable/models/base_model.dart';
+import 'package:pocket_timetable/models/identity_model.dart';
 
-class University extends BaseModel {
+class University extends IdentityModel {
   String shortName = '';
 
   University(int id, String name, this.shortName) {

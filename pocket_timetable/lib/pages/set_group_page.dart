@@ -3,9 +3,7 @@ import 'package:pocket_timetable/constants/api.dart';
 import 'package:pocket_timetable/constants/page_titles.dart';
 import 'package:pocket_timetable/constants/prefs_keys.dart';
 import 'package:pocket_timetable/models/userdata.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert' as convert;
 
 import '../constants/labels.dart';
 import '../models/group.dart';
@@ -23,7 +21,7 @@ class SetGroupPage extends StatefulWidget {
 }
 
 class _SetGroupPageState extends State<SetGroupPage> {
-  final TextEditingController _searchController = TextEditingController();
+  late TextEditingController _searchController;
   List<Group> _groups = [];
   List<Group> _searchResults = [];
 
@@ -31,46 +29,31 @@ class _SetGroupPageState extends State<SetGroupPage> {
   void initState() {
     super.initState();
 
-    int universityId = widget.userdata.universityId ?? 0;
-    _getGroupsByUniversityId(universityId).then((groups) {
-      setState(() {
-        _groups = groups;
-      });
+    _searchController = TextEditingController();
+
+    Map<String, dynamic> params = {
+      Api.universityIdKey: (widget.userdata.universityId ?? 0).toString()
+    };
+    Map<String, String> headers = {
+      Api.ngrokSkipWarningHeader: '10'
+    };
+    getDataFromServer(Api.groups, headers, params).then((responseData) {
+      List<Group> groups = responseData.map<Group>((item) {
+        return Group.fromResponse(item);
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _groups = groups;
+        });
+      }
     });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-
     super.dispose();
-  }
-
-  Future<List<Group>> _getGroupsByUniversityId(int universityId) async {
-    List<Group> groupsFromResponse = [];
-
-    Uri url = Uri.https(
-        Api.host,
-        '${Api.apiRoot}${Api.groups}',
-        { Api.universityIdKey: universityId.toString() }
-    );
-
-    http.Response response = await http.get(url, headers: {
-      Api.ngrokSkipWarningHeader: '10'
-    });
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseData = convert
-          .jsonDecode(response.body) as Map<String, dynamic>;
-      groupsFromResponse = responseData[Api.successKey]?
-          responseData[Api.dataKey].map<Group>((groupFromResponse) {
-            return Group.fromResponse(groupFromResponse);
-          }).toList()
-          :
-          [];
-    }
-
-    return groupsFromResponse;
   }
 
   void _returnToUserdataPage(BuildContext context) {

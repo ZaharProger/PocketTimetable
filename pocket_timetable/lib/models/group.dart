@@ -1,8 +1,8 @@
-import 'package:pocket_timetable/models/base_model.dart';
+import 'package:pocket_timetable/models/identity_model.dart';
 
 import '../constants/api.dart';
 
-class Group extends BaseModel {
+class Group extends IdentityModel {
   int? universityId;
 
   Group.fromResponse(Map<String, dynamic> dataFromResponse) {

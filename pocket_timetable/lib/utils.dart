@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
+import 'constants/api.dart';
 import 'models/validation_case.dart';
 
 void redirect(BuildContext context, String route, [Object? args]) {
@@ -14,27 +17,36 @@ void goBack(BuildContext context) {
   Navigator.of(context).pop();
 }
 
-String defineGreeting(String username) {
-  String greeting;
-  int currentHour = DateTime.now().hour;
-
-  if (currentHour >= 5 && currentHour <= 11) {
-    greeting = 'Доброе утро';
-  }
-  else if (currentHour >= 12 && currentHour <= 16) {
-    greeting = 'Добрый день';
-  }
-  else if (currentHour >= 17 && currentHour <= 23) {
-    greeting = 'Добрый вечер';
-  }
-  else {
-    greeting = 'Доброй ночи';
-  }
-
-  return '$greeting, $username!';
-}
-
 String? validate(String value, ValidationCase validationCase) {
   return validationCase.regExp.hasMatch(value)?
     null : validationCase.messageIfError;
+}
+
+String getTimeFromSeconds(int time) {
+  int hours = time ~/ 3600;
+  int minutes = (time - hours * 3600) ~/ 60;
+  String hoursString = hours < 10? '0$hours' : hours.toString();
+  String minutesString = minutes < 10? '0$minutes' : minutes.toString();
+
+  return '$hoursString:$minutesString';
+}
+
+Future<dynamic> getDataFromServer(String endpoint,
+    [Map<String, String>? headers, Map<String, dynamic>? params]) async {
+
+  dynamic dataFromResponse = [];
+
+  Uri url = Uri.https(Api.host, '${Api.apiRoot}$endpoint', params);
+  http.Response response = await http.get(url, headers: headers);
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> responseData = convert
+        .jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (responseData[Api.successKey]) {
+      dataFromResponse = responseData[Api.dataKey];
+    }
+  }
+
+  return dataFromResponse;
 }
