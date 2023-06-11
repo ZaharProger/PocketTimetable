@@ -183,6 +183,82 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
     String subjectTimeEnd = getTimeFromSeconds(subject.timeEnd);
     bool isActive = _isSubjectActive(subject);
 
+    List<Widget> leftColumnChildren = [Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '$subjectTimeStart - $subjectTimeEnd',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+            overflow: TextOverflow.visible,
+          ),
+        )
+      )];
+    if (subject.tutor.isNotEmpty) {
+      leftColumnChildren.add(Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 20
+            ),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                subject.tutor,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.visible,
+              ),
+            ),
+          ),
+        ));
+    }
+
+    List<Widget> rightColumnChildren = [
+      Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10
+          ),
+          height: 20,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              bottomLeft: Radius.circular(20)
+            )
+          ),
+          child: Text(
+            Labels.subjectIsActiveLabel,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+            overflow: TextOverflow.visible,
+          )
+        ),
+      ),
+      Expanded(
+        child: Padding(
+          padding: EdgeInsets.only(
+            right: 10,
+            top: isActive? 9 : subject.tutor.isNotEmpty? 10 : 0
+          ),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              subject.classroom,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ),
+      )
+    ];
+    if (!isActive) {
+      rightColumnChildren.removeAt(0);
+    }
+
     return Padding(
       key: Key("subject_card_$index"),
       padding: const EdgeInsets.only(
@@ -231,83 +307,48 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            '$subjectTimeStart-$subjectTimeEnd',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            overflow: TextOverflow.visible,
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: leftColumnChildren,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        height: 30,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 1,
-                            horizontal: 10
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: isActive? 8 : 10,
+                          bottom: 10,
+                          left: 10
                         ),
-                        alignment: Alignment.centerRight,
-                        decoration: BoxDecoration(
-                            color: isActive? Theme.of(context)
-                                .colorScheme.onPrimaryContainer :
-                            Colors.transparent,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                bottomLeft: Radius.circular(20)
-                            )
-                        ),
-                        child: Text(
-                          isActive? Labels.subjectIsActiveLabel : '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          overflow: TextOverflow.visible,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: rightColumnChildren,
                         ),
                       ),
                     )
                   ],
                 ),
               ),
-              Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Text(
-                              subject.tutor,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              overflow: TextOverflow.visible,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                              subject.classroom,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              overflow: TextOverflow.visible,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+              const SizedBox(
+                height: 40,
               ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 10
+                ),
+                child: Text(
+                  subject.subjectType,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
             ],
           )
-      ),
+      )
     );
   }
 

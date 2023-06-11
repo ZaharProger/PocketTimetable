@@ -14,7 +14,7 @@ extension TimetableExtension on List<StudyDay> {
       {
         Api.nameKey: subject.name,
         Api.tutorKey: subject.tutor,
-        Api.subjectTypeKey: subject.subjectType.index,
+        Api.subjectTypeKey: subject.subjectType,
         Api.classroomKey: subject.classroom,
         Api.timeStartKey: subject.timeStart,
         Api.timeEndKey: subject.timeEnd,
