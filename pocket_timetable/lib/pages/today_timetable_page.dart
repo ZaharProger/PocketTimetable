@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_timetable/components/subject_card.dart';
 import 'package:pocket_timetable/constants/labels.dart';
 import 'package:pocket_timetable/constants/prefs_keys.dart';
+import 'package:pocket_timetable/constants/routes.dart';
 import 'package:pocket_timetable/models/subject.dart';
 import 'package:pocket_timetable/timetable_extension.dart';
 import 'package:pocket_timetable/models/userdata.dart';
@@ -30,7 +32,6 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
         Color.fromARGB(255, 42, 70, 76)
       ]
   );
-  LinearGradient? _subjectCardBackgroundColor;
   List<Subject> _todaySubjects = [];
   late PageController _pageController;
   int _activePage = 1;
@@ -42,16 +43,15 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
     _pageController = PageController(viewportFraction: 0.9, initialPage: 1);
 
     _getUserdata().then((userdata) {
-      var (greeting, backgroundColor, cardColor) = _getPageSettings(
+      var (greeting, backgroundColor) = _getPageSettings(
           userdata.userName ?? ''
       );
       setState(() {
         _greetingText = greeting;
         _pageBackgroundColor = backgroundColor;
-        _subjectCardBackgroundColor = cardColor;
       });
 
-      _isTimetableExists().then((hasTimetable) {
+      isTimetableExists().then((hasTimetable) {
         if (!hasTimetable) {
           Map<String, String> headers = {
             Api.ngrokSkipWarningHeader: '10'
@@ -107,11 +107,6 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
     prefs.setString(PrefsKeys.weekTimetable, timetableJson);
   }
 
-  Future<bool> _isTimetableExists() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(PrefsKeys.weekTimetable);
-  }
-
   Future<StudyDay> _getTodayTimetable() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String weekTimetable = prefs.getString(PrefsKeys.weekTimetable)!;
@@ -131,7 +126,7 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
     return todayTimetable;
   }
 
-  (String, LinearGradient, LinearGradient) _getPageSettings(String username) {
+  (String, LinearGradient) _getPageSettings(String username) {
     int currentHour = DateTime.now().hour;
 
     var (greeting, pageColors) = switch(currentHour) {
@@ -158,202 +153,23 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
       end: const Alignment(0.8, 1),
       colors: pageColors
     );
-    LinearGradient cardBackground = LinearGradient(
-      begin: pageBackground.begin,
-      end: pageBackground.end,
-      colors: pageColors.reversed.toList()
-    );
 
-    return ('$greeting, $username!', pageBackground, cardBackground);
+    return ('$greeting, $username!', pageBackground);
   }
 
-  bool _isSubjectActive(Subject subject) {
-    DateTime currentDateTime = DateTime.now();
-    int currentSeconds = currentDateTime.hour * 3600 +
-        currentDateTime.minute * 60;
-
-    return currentSeconds >= subject.timeStart &&
-        currentSeconds <= subject.timeEnd;
-  }
-
-  Widget _getSubjectCard(int index) {
-    Subject subject = _todaySubjects[index];
-
-    String subjectTimeStart = getTimeFromSeconds(subject.timeStart);
-    String subjectTimeEnd = getTimeFromSeconds(subject.timeEnd);
-    bool isActive = _isSubjectActive(subject);
-
-    List<Widget> leftColumnChildren = [Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            '$subjectTimeStart - $subjectTimeEnd',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall,
-            overflow: TextOverflow.visible,
-          ),
-        )
-      )];
-    if (subject.tutor.isNotEmpty) {
-      leftColumnChildren.add(Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              top: 20
-            ),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                subject.tutor,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-                overflow: TextOverflow.visible,
-              ),
-            ),
-          ),
-        ));
-    }
-
-    List<Widget> rightColumnChildren = [
-      Align(
-        alignment: Alignment.centerRight,
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10
-          ),
-          height: 20,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              bottomLeft: Radius.circular(20)
-            )
-          ),
-          child: Text(
-            Labels.subjectIsActiveLabel,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall,
-            overflow: TextOverflow.visible,
-          )
-        ),
-      ),
-      Expanded(
-        child: Padding(
-          padding: EdgeInsets.only(
-            right: 10,
-            top: isActive? 9 : subject.tutor.isNotEmpty? 10 : 0
-          ),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: Text(
-              subject.classroom,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-              overflow: TextOverflow.visible,
-            ),
-          ),
-        ),
-      )
-    ];
-    if (!isActive) {
-      rightColumnChildren.removeAt(0);
-    }
-
-    return Padding(
-      key: Key("subject_card_$index"),
-      padding: const EdgeInsets.only(
-        bottom: 10
-      ),
-      child: AnimatedContainer(
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOutCubic,
-          margin: EdgeInsets.all(_activePage == index? 10 : 15),
-          decoration: BoxDecoration(
-              gradient: _subjectCardBackgroundColor,
-              shape: BoxShape.rectangle,
-              borderRadius: const BorderRadius.all(
-                  Radius.circular(20)
-              ),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black38,
-                  offset: Offset(0, 5),
-                  blurRadius: 10,
-                )
-              ]
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      subject.name,
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context).textTheme.bodySmall,
-                      overflow: TextOverflow.visible,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 60),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: leftColumnChildren,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: isActive? 8 : 10,
-                          bottom: 10,
-                          left: 10
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: rightColumnChildren,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 10
-                ),
-                child: Text(
-                  subject.subjectType,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )
-            ],
-          )
-      )
-    );
+  void _weekTimetableButtonClickHandler() {
+    clearHistory(context);
+    redirect(context, Routes.weekTimetable);
   }
 
   @override
   Widget build(BuildContext context) {
+    LinearGradient cardBackground = LinearGradient(
+        begin: _pageBackgroundColor.begin,
+        end: _pageBackgroundColor.end,
+        colors: _pageBackgroundColor.colors.reversed.toList()
+    );
+
     return Container(
       decoration: BoxDecoration(
         gradient: _pageBackgroundColor
@@ -402,7 +218,12 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
                 });
               },
               itemBuilder: (context, index) {
-                return _getSubjectCard(index);
+                return SubjectCard(
+                    subjectKey: 'subject_card_$index',
+                    subject: _todaySubjects[index],
+                    cardColor: cardBackground,
+                    cardMargin: _activePage == index? 10 : 15
+                );
               },
             ),
           ),
@@ -435,15 +256,18 @@ class _TodayTimetablePageState extends State<TodayTimetablePage> {
             ),
             child: Align(
                 alignment: Alignment.bottomRight,
-                child: Text(
-                  Labels.weekTimetableLabel,
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                      decoration: TextDecoration.none
-                  ),
+                child: GestureDetector(
+                  onTap: () => _weekTimetableButtonClickHandler(),
+                  child: Text(
+                    Labels.weekTimetableLabel,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                        decoration: TextDecoration.none
+                    ),
+                  )
                 )
             ),
           )

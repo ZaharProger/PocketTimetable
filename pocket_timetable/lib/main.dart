@@ -4,6 +4,7 @@ import 'package:pocket_timetable/constants/routes.dart';
 import 'package:pocket_timetable/models/userdata.dart';
 import 'package:pocket_timetable/pages/home_page.dart';
 import 'package:pocket_timetable/pages/set_group_page.dart';
+import 'package:pocket_timetable/pages/week_timetable_page.dart';
 
 void main() {
   runApp(const PocketTimetableApp());
@@ -64,6 +65,9 @@ class PocketTimetableApp extends StatelessWidget {
           case Routes.setGroup:
             Userdata userdata = settings.arguments as Userdata;
             page = SetGroupPage(userdata: userdata);
+            break;
+          case Routes.weekTimetable:
+            page = const WeekTimetablePage();
             break;
           default:
             page = const HomePage();

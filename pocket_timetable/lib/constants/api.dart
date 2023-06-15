@@ -1,5 +1,5 @@
 class Api {
-  static const String host = 'ec84-178-184-102-79.ngrok-free.app';
+  static const String host = 'a98d-178-184-102-79.ngrok-free.app';
   static const String apiRoot = '/pocket-timetable/api';
   static const String universities = '/University';
   static const String groups= '/Group';

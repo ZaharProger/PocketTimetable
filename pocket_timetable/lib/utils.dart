@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 
 import 'constants/api.dart';
+import 'constants/prefs_keys.dart';
 import 'models/validation_case.dart';
 
 void redirect(BuildContext context, String route, [Object? args]) {
@@ -49,4 +51,19 @@ Future<dynamic> getDataFromServer(String endpoint,
   }
 
   return dataFromResponse;
+}
+
+Future<bool> isUserDataConfigured() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  bool hasUniversity = prefs.containsKey(PrefsKeys.userUniversity);
+  bool hasGroup = prefs.containsKey(PrefsKeys.userGroup);
+  bool hasName = prefs.containsKey(PrefsKeys.userName);
+
+  return hasUniversity && hasGroup && hasName;
+}
+
+Future<bool> isTimetableExists() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.containsKey(PrefsKeys.weekTimetable);
 }

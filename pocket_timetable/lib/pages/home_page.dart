@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_timetable/constants/prefs_keys.dart';
 import 'package:pocket_timetable/pages/today_timetable_page.dart';
 import 'package:pocket_timetable/pages/set_primary_userdata_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/labels.dart';
+import '../utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,21 +21,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _isUserDataConfigured().then((cfgState) {
+    isUserDataConfigured().then((cfgState) {
       setState(() {
         _isConfigured = cfgState;
       });
     });
-  }
-
-  Future<bool> _isUserDataConfigured() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    bool hasUniversity = prefs.containsKey(PrefsKeys.userUniversity);
-    bool hasGroup = prefs.containsKey(PrefsKeys.userGroup);
-    bool hasName = prefs.containsKey(PrefsKeys.userName);
-
-    return hasUniversity && hasGroup && hasName;
   }
 
   Widget _getProgressBar() {
